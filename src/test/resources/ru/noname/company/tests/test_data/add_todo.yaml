@@ -1,0 +1,40 @@
+Create valid TODO:
+  text: DO SMTH
+  completed: true
+  random_id: true
+  should_be_updated: true
+  expected_status_code: 201
+
+Create TODO with empty text:
+  text: ""
+  completed: true
+  random_id: true
+  should_be_updated: true
+  expected_status_code: 201
+
+Create TODO without text field:
+  completed: true
+  random_id: true
+  remove_fields: [text]
+  should_be_updated: false
+  expected_status_code: 400
+  expected_error_description: "missing field `text`"
+
+Create TODO with text = null:
+  text: null
+  completed: true
+  random_id: true
+  should_be_updated: false
+  expected_status_code: 400
+  # TODO - error should be more informative, ask devs to fix
+  expected_error_description: "invalid type: null"
+
+
+#ARFIX-T2608 non-existed MSISDN test:
+#  pay_amount: "1000"
+#  currency_code: "1"
+#  msisdn: "0892006754"
+#  srv_id: "1"
+#  date_time: "20200102111342"
+#  expectedXMLPath: src/test/resources/expected_xml/act0/ARFIX-T2608 non-existed MSISDN test.xml
+#
