@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import ru.noname.company.config.AppConfig;
-import ru.noname.company.enums.TodoBodyParams;
+import ru.noname.company.enums.TodoBodyParam;
 import ru.noname.company.steps.Steps;
 
 import java.util.EnumMap;
@@ -21,10 +21,10 @@ public class BaseTest {
     @Setter(onMethod = @__(@Autowired))
     protected Steps steps;
 
-    protected Map<TodoBodyParams, Object> body;
+    protected Map<TodoBodyParam, Object> body;
 
     @BeforeEach
     public void setUp() {
-        body = new EnumMap<>(TodoBodyParams.class);
+        body = new EnumMap<>(TodoBodyParam.class);
     }
 }

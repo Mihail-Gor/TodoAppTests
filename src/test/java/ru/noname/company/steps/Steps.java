@@ -2,19 +2,18 @@ package ru.noname.company.steps;
 
 import io.qameta.allure.Step;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import ru.noname.company.enums.TodoBodyParams;
+import ru.noname.company.enums.TodoBodyParam;
 import ru.noname.company.service.TodoAppService;
 import ru.noname.company.util.TestUtils;
 
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static ru.noname.company.enums.TodoBodyParam.*;
 
 @Component
 @RequiredArgsConstructor
@@ -23,18 +22,18 @@ public class Steps {
     private final TodoAppService todoAppService;
 
     @Step("Step - add TODO")
-    public Map<TodoBodyParams, Object> addTodoStep(
+    public Map<TodoBodyParam, Object> addTodoStep(
             Integer id, String text, Boolean completed, Boolean randomId,
                             List<String> removeFields, Integer expectedStatusCode, String expectedErrorDescription) {
-        Map<TodoBodyParams, Object> body = new EnumMap<>(TodoBodyParams.class);
+        Map<TodoBodyParam, Object> body = new EnumMap<>(TodoBodyParam.class);
         id = randomId ? Math.abs(new Random().nextInt()) : id;
 
-        if (removeFields == null || !removeFields.contains(TodoBodyParams.ID.getValue()))
-            body.put(TodoBodyParams.ID, id);
-        if (removeFields == null || !removeFields.contains(TodoBodyParams.TEXT.getValue()))
-            body.put(TodoBodyParams.TEXT, text);
-        if (removeFields == null || !removeFields.contains(TodoBodyParams.COMPLETED.getValue()))
-            body.put(TodoBodyParams.COMPLETED, completed);
+        if (removeFields == null || !removeFields.contains(TodoBodyParam.ID.getValue()))
+            body.put(TodoBodyParam.ID, id);
+        if (removeFields == null || !removeFields.contains(TodoBodyParam.TEXT.getValue()))
+            body.put(TodoBodyParam.TEXT, text);
+        if (removeFields == null || !removeFields.contains(TodoBodyParam.COMPLETED.getValue()))
+            body.put(TodoBodyParam.COMPLETED, completed);
 
         ResponseEntity<String> response = todoAppService.addTodos(body);
         assertEquals(expectedStatusCode, response.getStatusCode().value());
@@ -46,18 +45,61 @@ public class Steps {
         return body;
     }
 
+    @Step("Step - add default TODO")
+    public Map<TodoBodyParam, Object> addDefaultTodoStep() {
+        Map<TodoBodyParam, Object> body = new EnumMap<>(TodoBodyParam.class);
+
+        body.put(TodoBodyParam.ID, Math.abs(new Random().nextInt()));
+        body.put(TodoBodyParam.TEXT, "default");
+        body.put(TodoBodyParam.COMPLETED, true);
+
+        ResponseEntity<String> response = todoAppService.addTodos(body);
+        assertEquals(HttpStatus.CREATED.value(), response.getStatusCode().value());
+
+        return body;
+    }
+
     @Step("Step - update TODO")
-    public void updateTodoStep(Map<TodoBodyParams, Object> body, Integer id, Integer expectedStatusCode, String expectedErrorDescription) {
-        ResponseEntity<String> response = todoAppService.updateTodos(body, id);
+    public Map<TodoBodyParam, Object> updateTodoStep(Integer id, String text, Boolean completed, Boolean randomId,
+                               List<String> removeFields, Integer expectedStatusCode, String expectedErrorDescription) {
+
+        Map<TodoBodyParam, Object> body = new EnumMap<>(TodoBodyParam.class);
+        id = randomId ? Math.abs(new Random().nextInt()) : id;
+
+        if (removeFields == null || !removeFields.contains(TodoBodyParam.ID.getValue()))
+            body.put(TodoBodyParam.ID, id);
+        if (removeFields == null || !removeFields.contains(TodoBodyParam.TEXT.getValue()))
+            body.put(TodoBodyParam.TEXT, text);
+        if (removeFields == null || !removeFields.contains(TodoBodyParam.COMPLETED.getValue()))
+            body.put(TodoBodyParam.COMPLETED, completed);
+
+        ResponseEntity<String> response = todoAppService.updateTodos(body, (Integer) body.get(ID));
         assertEquals(expectedStatusCode, response.getStatusCode().value());
+
         if (expectedErrorDescription != null) {
             assertEquals(expectedErrorDescription, response.getStatusCode().getReasonPhrase());
         }
+
+        return body;
+    }
+
+    @Step("Step - update default TODO")
+    public Map<TodoBodyParam, Object> updateDefaultTodoStep() {
+        Map<TodoBodyParam, Object> body = new EnumMap<>(TodoBodyParam.class);
+
+        body.put(TodoBodyParam.ID, Math.abs(new Random().nextInt()));
+        body.put(TodoBodyParam.TEXT, "updated text");
+        body.put(TodoBodyParam.COMPLETED, false);
+
+        ResponseEntity<String> response = todoAppService.updateTodos(body, (Integer) body.get(ID));
+        assertEquals(HttpStatus.CREATED.value(), response.getStatusCode().value());
+
+        return body;
     }
 
     @Step("Step - delete TODO")
-    public void deleteTodoStep(Integer id, Integer expectedStatusCode, String expectedErrorDescription) {
-        ResponseEntity<String> response = todoAppService.deleteTodos(id);
+    public void deleteTodoStep(Object id, Integer expectedStatusCode, String expectedErrorDescription) {
+        ResponseEntity<String> response = todoAppService.deleteTodos(Integer.parseInt(id.toString()));
         assertEquals(expectedStatusCode, response.getStatusCode().value());
         if (expectedErrorDescription != null) {
             assertThat(response.getBody()).contains(expectedErrorDescription);
@@ -65,22 +107,56 @@ public class Steps {
     }
 
     @Step("Step - get TODO")
-    public void getTodoStep(Map<TodoBodyParams, Object> body, Integer expectedStatusCode, String expectedErrorDescription) {
+    public void getMultipleTodoStep(List<Map<TodoBodyParam, Object>> bodyList, Integer expectedStatusCode) {
         ResponseEntity<String> response = todoAppService.getTodos();
         assertEquals(expectedStatusCode, response.getStatusCode().value());
-        if (expectedErrorDescription != null) {
-            assertThat(response.getBody()).contains(expectedErrorDescription);
-        }
-        assertThat(response.getBody()).contains(TestUtils.getJsonString(TestUtils.updateMapKeysToString(body)));
+        for (Map<TodoBodyParam, Object> body : bodyList)
+            assertThat(response.getBody()).containsOnlyOnce(TestUtils.getJsonString(TestUtils.updateMapKeysToString(body)));
     }
 
     @Step("Step - check TODO")
-    public void checkAppearedTodoStep(Map<TodoBodyParams, Object> body, Boolean shouldBeUpdated, Integer expectedStatusCode) {
+    public void checkAppearedTodoStep(Map<TodoBodyParam, Object> body, Boolean shouldBeInTodoList, Integer expectedStatusCode) {
         ResponseEntity<String> response = todoAppService.getTodos();
         assertEquals(expectedStatusCode, response.getStatusCode().value());
-        if (shouldBeUpdated)
-            assertThat(response.getBody()).contains(TestUtils.getJsonString(TestUtils.updateMapKeysToString(body)));
+        if (shouldBeInTodoList)
+            assertThat(response.getBody()).containsOnlyOnce(TestUtils.getJsonString(TestUtils.updateMapKeysToString(body)));
         else
             assertThat(response.getBody()).doesNotContain(TestUtils.getJsonString(TestUtils.updateMapKeysToString(body)));
+    }
+
+    @Step("Step - launch precondition steps")
+    public List<Map<TodoBodyParam, Object>> launchPreconditions(List<String> preconditions) {
+        List<Map<TodoBodyParam, Object>> bodyList = new ArrayList<>();
+
+        if (preconditions != null) {
+            for (String precondition : preconditions) {
+                switch (precondition) {
+                    case "add" -> {
+                        Map<TodoBodyParam, Object> body = addDefaultTodoStep();
+                        bodyList.add(body);
+                        checkAppearedTodoStep(body, true, HttpStatus.OK.value());
+                    }
+                    case "update" -> {
+                        Map<TodoBodyParam, Object> body = addDefaultTodoStep();
+                        checkAppearedTodoStep(body, true, HttpStatus.OK.value());
+                        body = updateDefaultTodoStep();
+                        bodyList.add(body);
+                        checkAppearedTodoStep(body, true, HttpStatus.OK.value());
+                    }
+                    case "delete" -> {
+                        Map<TodoBodyParam, Object> body = addDefaultTodoStep();
+                        bodyList.add(body);
+                        checkAppearedTodoStep(body, true, HttpStatus.OK.value());
+                        deleteTodoStep(body.get(ID), HttpStatus.NO_CONTENT.value(), null);
+                        checkAppearedTodoStep(body, false, HttpStatus.OK.value());
+                    }
+                    // TODO - looks like a crutch due to yaml parametrized tests disadvantage, should be added enum somehow
+                    default ->
+                            throw new IllegalArgumentException("value for precondition should be only: add, update, delete");
+                }
+
+            }
+        }
+        return bodyList;
     }
 }

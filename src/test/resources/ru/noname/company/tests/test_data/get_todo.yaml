@@ -1,0 +1,4 @@
+Check multiple todos creation:
+  preconditions: [add,add,add]
+  expected_status_code: 200
+

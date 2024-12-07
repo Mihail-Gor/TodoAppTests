@@ -2,7 +2,7 @@ package ru.noname.company.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ru.noname.company.enums.TodoBodyParams;
+import ru.noname.company.enums.TodoBodyParam;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -21,7 +21,7 @@ public class TestUtils {
         return bodyAsJsonString;
     }
 
-    public static Map<String, Object> updateMapKeysToString(Map<TodoBodyParams, Object> body) {
+    public static Map<String, Object> updateMapKeysToString(Map<TodoBodyParam, Object> body) {
         Map<String, Object> resultedMap = new LinkedHashMap<>();
         body.forEach((todoBodyParams, value) -> resultedMap.put(todoBodyParams.getValue(), value));
 

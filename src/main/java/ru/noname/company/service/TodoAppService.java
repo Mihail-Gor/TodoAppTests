@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.noname.company.client.RestClient;
-import ru.noname.company.enums.TodoBodyParams;
+import ru.noname.company.enums.TodoBodyParam;
 
 import java.util.Map;
 
@@ -20,11 +20,11 @@ public class TodoAppService {
         return restClient.getRequest(baseURL);
     }
 
-    public ResponseEntity<String> addTodos(Map<TodoBodyParams, Object> body) {
+    public ResponseEntity<String> addTodos(Map<TodoBodyParam, Object> body) {
         return restClient.postRequest(baseURL, updateMapKeysToString(body));
     }
 
-    public ResponseEntity<String> updateTodos(Map<TodoBodyParams, Object> body, Integer id) {
+    public ResponseEntity<String> updateTodos(Map<TodoBodyParam, Object> body, Integer id) {
         return restClient.putRequest(String.format("%s/%d", baseURL, id), updateMapKeysToString(body));
     }
 

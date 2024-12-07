@@ -25,7 +25,7 @@ public class RestClient {
 
     public ResponseEntity<String> getRequest(String url) {
         ResponseEntity<String> response = restTemplate.getForEntity(UriComponentsBuilder.fromHttpUrl(url).toUriString(), String.class);
-        log.info("Response:\n{}", response.getBody());
+        log.debug("Response:\n{}", response.getBody());
 
         return response;
     }
@@ -62,6 +62,7 @@ public class RestClient {
         try {
             responseEntity = restTemplate.exchange(url, method, httpEntity, String.class);
         } catch (HttpClientErrorException e) {
+            // TODO - change to handler
             responseEntity = new ResponseEntity<>(e.getResponseBodyAsString(), HttpStatus.BAD_REQUEST);
         } catch (HttpServerErrorException e) {
             responseEntity = new ResponseEntity<>(e.getResponseBodyAsString(), HttpStatus.INTERNAL_SERVER_ERROR);
