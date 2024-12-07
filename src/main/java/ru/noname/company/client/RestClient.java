@@ -72,29 +72,4 @@ public class RestClient {
         }
         return responseEntity;
     }
-
-//    private HttpEntity<String> getJsonHttpEntity(Map<String, Object> body) {
-//        String bodyAsJsonString;
-//
-//        try {
-//            bodyAsJsonString = objectMapper.writeValueAsString(body);
-//        } catch (JsonProcessingException e) {
-//            throw new RuntimeException(e);
-//        }
-//
-//        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-//        return new HttpEntity<>(bodyAsJsonString, httpHeaders);
-//    }
-
-//    public <T> ResponseEntity<T> getRequest(String url, Map<QueryParams, String> params, Class<T> clazz) {
-//        MultiValueMap<String, String> query = new LinkedMultiValueMap<>();
-//        params.forEach((queryParams, s) -> query.add(queryParams.toString(), s));
-//        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(url)
-//                .queryParams(query);
-//
-//        ResponseEntity<T> response = restTemplate.getForEntity(uriBuilder.toUriString(), clazz);
-//        log.info("Response:\n" + response.getBody());
-//
-//        return response;
-//    }
 }

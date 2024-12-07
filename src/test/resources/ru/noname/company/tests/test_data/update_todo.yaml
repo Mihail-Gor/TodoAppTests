@@ -29,12 +29,3 @@ Create TODO with text = null:
   # TODO - error should be more informative, ask devs to fix
   expected_error_description: "invalid type: null"
 
-
-#ARFIX-T2608 non-existed MSISDN test:
-#  pay_amount: "1000"
-#  currency_code: "1"
-#  msisdn: "0892006754"
-#  srv_id: "1"
-#  date_time: "20200102111342"
-#  expectedXMLPath: src/test/resources/expected_xml/act0/ARFIX-T2608 non-existed MSISDN test.xml
-#

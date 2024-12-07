@@ -5,22 +5,11 @@ import javax0.yamaledt.YamlSource;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
-import ru.noname.company.enums.TodoBodyParams;
 
 import java.util.List;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TodoAppTests extends BaseTest {
 
-//    private Integer id;
-
-    //    @BeforeEach
-//    void setId() {
-//        id = new Faker().number().numberBetween(0, 999999);
-//    }
     @ParameterizedTest(name = "{0}")
     @DisplayName("\"Add TODO\" test suit: ")
     @YamlSource(value = "test_data/add_todo.yaml")
@@ -34,8 +23,7 @@ public class TodoAppTests extends BaseTest {
                       @NotNull @Name("expected_status_code") Integer expectedStatusCode,
                       @Name("expected_error_description") String expectedErrorDescription) {
 
-        Map<TodoBodyParams, Object> body =
-                steps.addTodoStep(id, text, completed, randomId, removeFields, expectedStatusCode, expectedErrorDescription);
+        body = steps.addTodoStep(id, text, completed, randomId, removeFields, expectedStatusCode, expectedErrorDescription);
         steps.checkAppearedTodoStep(body, shouldBeUpdated, 200);
     }
 
