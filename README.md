@@ -73,6 +73,17 @@ src/test/resources/ru/noname/company/tests/test_data
 
 
 ---
+### Build and run tests:
+
+````
+mvn clean test
+````
+
+### Run allure:
+
+````
+mvn allure:serve
+````
 
 ---
 
