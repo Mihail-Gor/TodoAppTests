@@ -21,7 +21,6 @@ Update TODO without text field:
   preconditions: [add]
   should_be_in_todo_list: false
   expected_status_code: 400
-  # TODO - error should be more informative, ask devs to fix
   expected_error_description: "Bad Request"
 
 Update TODO with text = null:
@@ -31,7 +30,6 @@ Update TODO with text = null:
   preconditions: [add]
   should_be_in_todo_list: false
   expected_status_code: 400
-  # TODO - error should be more informative, ask devs to fix
   expected_error_description: "Bad Request"
 
 Update TODO with completed = false:
