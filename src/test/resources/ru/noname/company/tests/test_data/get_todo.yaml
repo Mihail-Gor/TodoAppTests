@@ -1,4 +1,5 @@
 Check multiple todos creation:
+# TODO - can be added a feature to use a loop for preconditions
   preconditions: [add,add,add]
   expected_status_code: 200
 
